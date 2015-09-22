@@ -1,6 +1,7 @@
 package martini
 
 import (
+	"encoding/json"
 	"github.com/codegangsta/inject"
 	"net/http"
 	"reflect"
@@ -29,7 +30,13 @@ func defaultReturnHandler() ReturnHandler {
 		if isByteSlice(responseVal) {
 			res.Write(responseVal.Bytes())
 		} else {
-			res.Write([]byte(responseVal.String()))
+
+			jsonBody, err := json.Marshal(responseVal.Interface())
+			if err != nil {
+				res.Write([]byte(responseVal.String()))
+			} else {
+				res.Write(jsonBody)
+			}
 		}
 	}
 }
